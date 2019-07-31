@@ -68,8 +68,6 @@
 
 同时这一点也说名了一个事实:**Lisp 语言可以让你无视什么是系统提供的 ,什么是自己定义的.**这是一件好事,因为这样的话你需要不断的define 一些优秀的方法,之后你每一次写代码的时候可以使用更高级的抽象方法, 来快速实现想法.
 
-<<<<<<< Updated upstream
-=======
 同时在Lisp中也有条件分支语句 如 : cond (condition的缩写) , if ... 你也可以自己定义一个.观察下面两种写法:
 ~~~scheme
 (define (abs x) 
@@ -85,5 +83,63 @@
 ~~~
 观察在cond符号后面的括号中有一个 **(< x 0)** .这被称为谓词(也可以叫做条件式)他会返回'ture' 或'false'两种真值. 在谓词后面是执行语句,这里是因为 '-'号后只有x一个参数所以就是对x取反.这只是'-'号的特殊性.不需要过度理解.
 
-可以看到if也是cond的语法糖.
->>>>>>> Stashed changes
+可以看到if也是cond的语法糖,也可以把cond看作是if的语法糖.
+
+## 课堂问题
+
+### Q 为什么使用define的时候有的时候第一个带括号有的时候不带呢?
+如:
+~~~scheme
+(define a (* x x))
+~~~
+和
+~~~ scheme
+(define (square x) (* x x))
+或者其语法糖
+(define square (lambda (x) (* x x)))
+~~~
+
+**原因**:
+
+因为define 语句的用法:
+(define thing thing_to_be)
+而其中thing可以是一个表达式,所以你可以定义一个square方法.而括号的有无只说明是否定义了一个过程.
+
+## example
+这个例子会显示出Lisp语言的特性,事实证明不需要循环语句就可以做到"连续"
+
+Q : 求一个数的平方根.(使用亚历山大heron连续求平均值法.)
+
+A : 
+~~~scheme
+(define (square x) (* x x))
+(define (average x y) (/ (+ x y) 2))
+(define (sqrt x)
+    (define (improve guess)
+        (average guess (/ x guess)))
+    (define (good-enough? guess)
+        (< (abs (- (square guess) x)) 
+            .00001))
+    (define (try guess)
+        (if (good-enough? guess)
+            guess
+            (try (improve guess))))
+    (try 1))
+~~~
+
+这是一种递归定义,这里最有意思的一点就是这个递归调用可以实现自己解释自己,自己定义自己的过程.看上去不可思议,但是事实就是如此.
+
+我们来看一下这个代码的语法树:
+
+![sqrt.png](pic\sqrt.png)
+
+看到了吗? try是内部定义,但用是自己调用的函数. 在学习其他语言的时候也会涉及到递归这种思想, 递归其实是一种很好的设计方式.
+
+## 小结回顾
+
+还记得最一开始的三个问题吗?为了回答这三个问题.我们看以下表格.
+
+|  基本元素    |   运算符     |  数据    |
+| ---- | ---- | ---- |
+|  如何结合元素    |      |      |
+|  如何抽象    |      |      |
