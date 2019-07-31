@@ -10,8 +10,12 @@
 
 网络上有一些SICP的中文资源,但是我没有版权所以这里不附资源.
 但是推荐中英文一起看,优先英文.因为现在阅读英文文献的能力十分重要,所以应该开始尝试阅读一些英文文献.
+
 英文版 : http://sarabander.github.io/sicp/html/index.xhtml#SEC_Contents (scheme)
 
+mooc网站 : https://cs61a.org/ (python)
+
+python还是scheme 我不知道如何选择.这里我选择的是scheme,选择的原因仅仅是因为在bilibil上有mooc的中文翻译.这样阅读英文教材也不怕自己会理解偏.但这不代表这选择scheme是更优的选择.希望读者针对自己的喜好做出调整.但也没有必要太过顾虑.选择一款让自己舒服的就可以了.但是如果你是cs新人,同时又想入门一个编程语言的话我建议python,因为你可以同时学习和锻炼python.
 
 ## 如何开始阅读这本书
 
