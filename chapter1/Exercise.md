@@ -97,3 +97,41 @@
 ~~~
 ### What behavior will Ben observe with an interpreter that uses applicative-order evaluation? What behavior will he observe with an interpreter that uses normal-order evaluation? Explain your answer. (Assume that the evaluation rule for the special form if is the same whether the interpreter is using normal or applicative order: The predicate expression is evaluated first, and the result determines whether to evaluate the consequent or the alternative expression.)
 
+正则序：
+~~~scheme 
+(test 0 (p))
+
+=>
+
+(if (= 0 0 )
+    0
+    (p))
+
+=>
+
+p
+
+~~~
+
+应用序；
+
+~~~scheme
+(test 0 (p))
+
+=>
+
+(test 0 (p))
+
+=>
+
+...
+
+=>
+
+(test 0 (p))
+~~~
+
+看到区别了吗？因为在定义 (p)的时候是一个死递归，所以根本不会跳出循环。
+在应用序的解析过程中，需要先求解参数，所以这就是为什么会陷入循环。但是在正则序的的解析中会“先展开后规约”所以没有出发到那个死循环的时候就得到结果了。
+
+关于正则序和应用序在后面会有更进一步的了解。但是要注意到的就是现在的Lisp解释器大都采用应用序的方式，这是为了减少计算次数。
