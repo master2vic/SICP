@@ -1,5 +1,6 @@
 # Exercise 1.1
 ### Q : Below is a sequence of expressions. What is the result printed by the interpreter in response to each expression? Assume that the sequence is to be evaluated in the order in which it is presented.
+
 ~~~scheme
 10
 (+ 5 3 4)
@@ -43,9 +44,9 @@
 
 # Exercise 1.2
 ### Q : Translate the following expression into prefix form:
-
-![exercise 1.2](pic\exer1.2.png)
-
+$$
+\frac{5+4+(2-(3-(6+\frac45)))}{3*(6-2)*(2-7)}
+$$
 ~~~scheme
 (/ (+ 5 4 
     (- 2 
@@ -97,6 +98,7 @@
 ~~~
 ### What behavior will Ben observe with an interpreter that uses applicative-order evaluation? What behavior will he observe with an interpreter that uses normal-order evaluation? Explain your answer. (Assume that the evaluation rule for the special form if is the same whether the interpreter is using normal or applicative order: The predicate expression is evaluated first, and the result determines whether to evaluate the consequent or the alternative expression.)
 
+### answer:
 正则序：
 ~~~scheme 
 (test 0 (p))
@@ -135,3 +137,61 @@ p
 在应用序的解析过程中，需要先求解参数，所以这就是为什么会陷入循环。但是在正则序的的解析中会“先展开后规约”所以没有出发到那个死循环的时候就得到结果了。
 
 关于正则序和应用序在后面会有更进一步的了解。但是要注意到的就是现在的Lisp解释器大都采用应用序的方式，这是为了减少计算次数。
+
+# Exercise 1.6
+### Alyssa P. Hacker doesn’t see why if needs to be provided as a special form. “Why can’t I just define it as an ordinary procedure in terms of cond?” she asks. Alyssa’s friend Eva Lu Ator claims this can indeed be done, and she defines a new version of if:
+~~~scheme
+(define (new-if predicate 
+                then-clause 
+                else-clause)
+    (cond (predicate then-clause)
+        (else else-clause)))
+~~~
+### Eva demonstrates the program for Alyssa:
+~~~scheme
+(new-if (= 2 3) 0 5)
+5
+
+(new-if (= 1 1) 0 5)
+0
+~~~
+### Delighted, Alyssa uses new-if to rewrite the square-root program:
+~~~scheme
+(define (sqrt-iter guess x)
+    (new-if (good-enough? guess x)
+        guess
+        (sqrt-iter (improve guess x) x)))
+~~~
+What happens when Alyssa attempts to use this to compute square roots? Explain.
+
+### answer：
+
+这道题一开始感觉没有任何问题，觉得不都是一样的吗？但是越是感觉莫名其妙越是觉得应该有没有考虑到的。
+
+所以稳妥起见，先把代码以4的情况展开。(注意这里要用应用序，因为1.5就讨论过，lisp用的是应用序)
+
+~~~scheme
+(sqrt-iter 1 4)
+
+(new-if (good-enough? 1 4)
+    guess
+    (sqrt-iter (improve 1 4) 4))
+
+~~~
+
+其实展开到这里就会发现问题，这里的'new-if'也是一个过程。又因为Lisp语言解析器要对所有的参数都要先进行算值然后再进行下一步展开。也就是肯定要进入下一个'sqrt-iter'函数。而正常情况下'sqrt-iter'的执行有一个先决条件:'good-enough?'过程返回的是'false'。而这个条件再计算参数的时候是不直接经历的，所以就会程序就会死在这里。
+
+![sqrt-iter tree.png](pic\sqrt-iter6r.png)
+
+# Exercise 1.7
+### The good-enough? test used in computing square roots will not be very effective for finding the square roots of very small numbers. Also, in real computers, arithmetic operations are almost always performed with limited precision. This makes our test inadequate for very large numbers. Explain these statements, with examples showing how the test fails for small and large numbers. An alternative strategy for implementing good-enough? is to watch how guess changes from one iteration to the next and to stop when the change is a very small fraction of the guess. Design a square-root procedure that uses this kind of end test. Does this work better for small and large numbers?
+
+# Exercise 1.8
+### Newton’s method for cube roots is based on the fact that if y is an approximation to the cube root of x, then a better approximation is given by the value
+
+$$
+\frac{x/y^2+2y}{3}
+$$
+
+### Use this formula to implement a cube-root procedure analogous to the square-root procedure. (In 1.3.4 we will see how to implement Newton’s method in general as an abstraction of these square-root and cube-root procedures.)
+
