@@ -186,6 +186,35 @@ What happens when Alyssa attempts to use this to compute square roots? Explain.
 # Exercise 1.7
 ### The good-enough? test used in computing square roots will not be very effective for finding the square roots of very small numbers. Also, in real computers, arithmetic operations are almost always performed with limited precision. This makes our test inadequate for very large numbers. Explain these statements, with examples showing how the test fails for small and large numbers. An alternative strategy for implementing good-enough? is to watch how guess changes from one iteration to the next and to stop when the change is a very small fraction of the guess. Design a square-root procedure that uses this kind of end test. Does this work better for small and large numbers?
 
+这个问题其实就是在问：good-enough?去判断很大的数和很小的数合不合适。
+
+两点原因会导致判断不准确：
+1. 计算机有精度问题。
+2. good-enough? 本身就是判断两次迭代中的变化量，但是对于很小的数就会不准却。
+
+如： 'good-enough?'的精度是0.00001的时候。
+
+1. 很小的数：当测试的数据是‘0.0000001’那么第一次迭代之后‘guess’的值就为0.000005。 其平方与数据的差值 < 0.00001(设定标准) 则会在第一次的时候就会出去。然而真实值大致是0.000316左右。那么此时的误差Δ=0.000311。这个误差相对于这个数本身显得十分大。
+2. 很大的数：有可能会使得递归栈空间过大而溢出。
+
+所以用另一种方式来判断：两次修正后的结果之差Δ < 一个较小值则认为这是一个较为近似的解。
+
+~~~scheme
+(define (good-enough? guess x)
+    (< (abs (- guess (improve guess x)))
+        0.00001))
+~~~
+
+但是做减法也有问题。那就是对于较小数的优化还是有问题。所以用比例的方式解决。
+
+~~~scheme
+(define (good-enough? guess x)
+    (< (abs (-1+ (/ guess (improve guess x))
+        0.0001))))
+~~~
+
+这个函数就是在两次改变率小于 0.0001的时候就采纳这个值作为猜测值。
+
 # Exercise 1.8
 ### Newton’s method for cube roots is based on the fact that if y is an approximation to the cube root of x, then a better approximation is given by the value
 
@@ -195,3 +224,11 @@ $$
 
 ### Use this formula to implement a cube-root procedure analogous to the square-root procedure. (In 1.3.4 we will see how to implement Newton’s method in general as an abstraction of these square-root and cube-root procedures.)
 
+在给定一个y的平方根的近似值之后可以采用上面的函数来寻找一个跟逼近的值。就是相当于改写improve函数。
+
+~~~scheme
+(define (improve guess x)
+    (/ (+ (/ guess (square x))
+            (* 2 x))
+        3))
+~~~
